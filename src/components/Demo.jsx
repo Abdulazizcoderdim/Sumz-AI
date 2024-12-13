@@ -1,49 +1,48 @@
-import { useState, useEffect } from 'react'
-import { copy, linkIcon, loader, tick } from '../assets'
-import { useLazyGetSummaryQuery } from '../services/article'
+import { useEffect, useState } from 'react';
+import { copy, linkIcon, loader, tick } from '../assets';
+import { useLazyGetSummaryQuery } from '../services/article';
 
 const Demo = () => {
   const [article, setArticle] = useState({
     url: '',
     summary: '',
-  })
-  const [allArticles, setAllArticles] = useState([])
-  const [copyied, setCopyied] = useState("")
+  });
+  const [allArticles, setAllArticles] = useState([]);
+  const [copyied, setCopyied] = useState('');
 
-  const [getSummary, { error, isFetching }] = useLazyGetSummaryQuery()
+  const [getSummary, { error, isFetching }] = useLazyGetSummaryQuery();
 
   useEffect(() => {
     const articlesFromLocalStorage = JSON.parse(
       localStorage.getItem('articles')
-    )
+    );
 
     if (articlesFromLocalStorage) {
-      setAllArticles(articlesFromLocalStorage)
+      setAllArticles(articlesFromLocalStorage);
     }
-  }, [])
+  }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleSubmit = async e => {
+    e.preventDefault();
 
-    const { data } = await getSummary({ articleUrl: article.url })
+    const { data } = await getSummary({ articleUrl: article.url });
 
     if (data?.summary) {
-      const newArticle = { ...article, summary: data.summary }
-      const updatedAllArticles = [newArticle, ...allArticles]
+      const newArticle = { ...article, summary: data.summary };
+      const updatedAllArticles = [newArticle, ...allArticles];
 
-      setArticle(newArticle)
-      setAllArticles(updatedAllArticles)
+      setArticle(newArticle);
+      setAllArticles(updatedAllArticles);
 
-      localStorage.setItem('articles', JSON.stringify(updatedAllArticles))
+      localStorage.setItem('articles', JSON.stringify(updatedAllArticles));
     }
-  }
+  };
 
-
-  const handleCopy = (copyUrl) => {
+  const handleCopy = copyUrl => {
     setCopyied(copyUrl);
     navigator.clipboard.writeText(copyUrl);
     setTimeout(() => setCopyied(false), 3000);
-  }
+  };
 
   return (
     <section className="mt-16 w-full max-w-xl">
@@ -61,7 +60,7 @@ const Demo = () => {
           <input
             type="url"
             placeholder="Enter a URL"
-            onChange={(e) => setArticle({ ...article, url: e.target.value })}
+            onChange={e => setArticle({ ...article, url: e.target.value })}
             required
             value={article.url}
             className="url_input peer"
@@ -82,7 +81,12 @@ const Demo = () => {
               className="link_card"
               onClick={() => setArticle(item)}
             >
-              <div className="copy_btn" onClick={()=>{handleCopy(item.url)}}>
+              <div
+                className="copy_btn"
+                onClick={() => {
+                  handleCopy(item.url);
+                }}
+              >
                 <img
                   src={copyied === item.url ? tick : copy}
                   className="w-[40%] h-[40%] object-contain"
@@ -125,7 +129,7 @@ const Demo = () => {
         )}
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Demo
+export default Demo;
